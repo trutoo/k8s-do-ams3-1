@@ -1,4 +1,5 @@
 # Fetched from https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.27.1/deploy/static/provider/cloud-generic.yaml
+# Modified adding annotation following https://github.com/jetstack/cert-manager/issues/863#issuecomment-567062996
 
 kind: Service
 apiVersion: v1
@@ -8,6 +9,8 @@ metadata:
   labels:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-hostname: 'kube.trutoo.com'
 spec:
   externalTrafficPolicy: Local
   type: LoadBalancer
