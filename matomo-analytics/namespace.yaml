@@ -1,0 +1,6 @@
+# Fetched from https://raw.githubusercontent.com/crazy-max/docker-matomo/3.13.1-RC6/examples/kubernetes/01-namespace.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: matomo

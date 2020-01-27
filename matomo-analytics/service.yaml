@@ -1,0 +1,15 @@
+# Fetched from https://raw.githubusercontent.com/crazy-max/docker-matomo/3.13.1-RC6/examples/kubernetes/04-service.yaml
+# Modified port
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: matomo
+  namespace: matomo
+spec:
+  ports:
+    - port: 80
+      targetPort: web
+      name: http
+  selector:
+    app: matomo
