@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentry-web
+  namespace: sentry
+  labels:
+    app: sentry-web
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: web
+      name: http
+  selector:
+    app: sentry-web

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentry-memcached
+  namespace: sentry
+  labels:
+    app: sentry-memcached
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sentry-memcached
+  template:
+    metadata:
+      labels:
+        app: sentry-memcached
+    spec:
+      containers:
+        - name: sentry-memcached
+          image: memcached:1.5-alpine
+          ports:
+            - containerPort: 11211
+              name: memcached
+          resources:
+            limits:
+              memory: '64Mi'
+              cpu: '25m'
+            requests:
+              memory: '64Mi'
+              cpu: '25m'

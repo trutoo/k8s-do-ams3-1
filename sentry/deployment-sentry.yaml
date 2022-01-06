@@ -1,0 +1,224 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentry-web
+  namespace: sentry
+  labels:
+    app: sentry-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentry-web
+  template:
+    metadata:
+      labels:
+        app: sentry-web
+    spec:
+      containers:
+        - name: sentry-web
+          image: sentry:9.0-onbuild
+          ports:
+            - containerPort: 9000
+              name: web
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '100m'
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+          env:
+            - name: SENTRY_MEMCACHED_HOST
+              value: sentry-memcached
+            - name: SENTRY_MEMCACHED_PORT
+              value: '11211'
+
+            - name: SENTRY_REDIS_HOST
+              value: sentry-redis
+            - name: SENTRY_REDIS_PORT
+              value: '6379'
+
+            - name: SENTRY_POSTGRES_HOST
+              value: external-postgresql.default.svc.cluster.local
+            - name: SENTRY_POSTGRES_PORT
+              value: '25060'
+
+            - name: SENTRY_EMAIL_HOST
+              value: smtp-relay.gmail.com
+            - name: SENTRY_EMAIL_PORT
+              value: '587'
+            - name: SENTRY_EMAIL_USE_TLS
+              value: 'true'
+            - name: SENTRY_EMAIL_USER
+              value: erik.hughes@trutoo.com
+            - name: SENTRY_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sentry
+                  key: email-token
+
+            - name: SENTRY_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sentry
+                  key: sentry-secret
+
+          volumeMounts:
+            - mountPath: '/var/lib/sentry/files'
+              name: sentry-data
+
+      volumes:
+        - name: sentry-data
+          persistentVolumeClaim:
+            claimName: sentry-data
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentry-cron
+  namespace: sentry
+  labels:
+    app: sentry-cron
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentry-cron
+  template:
+    metadata:
+      labels:
+        app: sentry-cron
+    spec:
+      containers:
+        - name: sentry-cron
+          image: sentry:9.0-onbuild
+          command: ['/entrypoint.sh']
+          args: ['run', 'cron']
+          resources:
+            limits:
+              memory: '64Mi'
+              cpu: '50m'
+            requests:
+              memory: '64Mi'
+              cpu: '50m'
+          env:
+            - name: SENTRY_MEMCACHED_HOST
+              value: sentry-memcached
+            - name: SENTRY_MEMCACHED_PORT
+              value: '11211'
+
+            - name: SENTRY_REDIS_HOST
+              value: sentry-redis
+            - name: SENTRY_REDIS_PORT
+              value: '6379'
+
+            - name: SENTRY_POSTGRES_HOST
+              value: external-postgresql.default.svc.cluster.local
+            - name: SENTRY_POSTGRES_PORT
+              value: '25060'
+
+            - name: SENTRY_EMAIL_HOST
+              value: smtp-relay.gmail.com
+            - name: SENTRY_EMAIL_PORT
+              value: '587'
+            - name: SENTRY_EMAIL_USE_TLS
+              value: 'true'
+            - name: SENTRY_EMAIL_USER
+              value: erik.hughes@trutoo.com
+            - name: SENTRY_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sentry
+                  key: email-password
+
+            - name: SENTRY_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sentry
+                  key: sentry-secret
+
+          volumeMounts:
+            - mountPath: '/var/lib/sentry/files'
+              name: sentry-data
+
+      volumes:
+        - name: sentry-data
+          persistentVolumeClaim:
+            claimName: sentry-data
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentry-worker
+  namespace: sentry
+  labels:
+    app: sentry-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentry-worker
+  template:
+    metadata:
+      labels:
+        app: sentry-worker
+    spec:
+      containers:
+        - name: sentry-worker
+          image: sentry:9.0-onbuild
+          command: ['/entrypoint.sh']
+          args: ['run', 'worker']
+          resources:
+            limits:
+              memory: '64Mi'
+              cpu: '50m'
+            requests:
+              memory: '64Mi'
+              cpu: '50m'
+          env:
+            - name: SENTRY_MEMCACHED_HOST
+              value: sentry-memcached
+            - name: SENTRY_MEMCACHED_PORT
+              value: '11211'
+
+            - name: SENTRY_REDIS_HOST
+              value: sentry-redis
+            - name: SENTRY_REDIS_PORT
+              value: '6379'
+
+            - name: SENTRY_POSTGRES_HOST
+              value: external-postgresql.default.svc.cluster.local
+            - name: SENTRY_POSTGRES_PORT
+              value: '25060'
+
+            - name: SENTRY_EMAIL_HOST
+              value: smtp-relay.gmail.com
+            - name: SENTRY_EMAIL_PORT
+              value: '587'
+            - name: SENTRY_EMAIL_USE_TLS
+              value: 'true'
+            - name: SENTRY_EMAIL_USER
+              value: erik.hughes@trutoo.com
+            - name: SENTRY_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sentry
+                  key: email-password
+
+            - name: SENTRY_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sentry
+                  key: sentry-secret
+
+          volumeMounts:
+            - mountPath: '/var/lib/sentry/files'
+              name: sentry-data
+
+      volumes:
+        - name: sentry-data
+          persistentVolumeClaim:
+            claimName: sentry-data

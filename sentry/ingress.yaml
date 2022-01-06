@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: sentry-web
+  namespace: sentry
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+  labels:
+    app: sentry-web
+spec:
+  rules:
+    - host: analytics.tapps.io
+      http:
+        paths:
+          - backend:
+              serviceName: sentry-web
+              servicePort: http

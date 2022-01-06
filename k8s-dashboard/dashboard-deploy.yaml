@@ -1,4 +1,4 @@
-# Fetched from https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc2/aio/deploy/recommended.yaml
+# Fetched from https://raw.githubusercontent.com/kubernetes/dashboard/v2.4.0/aio/deploy/recommended.yaml
 
 # Copyright 2017 The Kubernetes Authors.
 #
@@ -20,6 +20,7 @@ metadata:
   name: kubernetes-dashboard
 
 ---
+
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -29,6 +30,7 @@ metadata:
   namespace: kubernetes-dashboard
 
 ---
+
 kind: Service
 apiVersion: v1
 metadata:
@@ -44,6 +46,7 @@ spec:
     k8s-app: kubernetes-dashboard
 
 ---
+
 apiVersion: v1
 kind: Secret
 metadata:
@@ -54,6 +57,7 @@ metadata:
 type: Opaque
 
 ---
+
 apiVersion: v1
 kind: Secret
 metadata:
@@ -63,9 +67,10 @@ metadata:
   namespace: kubernetes-dashboard
 type: Opaque
 data:
-  csrf: ''
+  csrf: ""
 
 ---
+
 apiVersion: v1
 kind: Secret
 metadata:
@@ -76,6 +81,7 @@ metadata:
 type: Opaque
 
 ---
+
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -85,6 +91,7 @@ metadata:
   namespace: kubernetes-dashboard
 
 ---
+
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -94,38 +101,27 @@ metadata:
   namespace: kubernetes-dashboard
 rules:
   # Allow Dashboard to get, update and delete Dashboard exclusive secrets.
-  - apiGroups: ['']
-    resources: ['secrets']
-    resourceNames:
-      [
-        'kubernetes-dashboard-key-holder',
-        'kubernetes-dashboard-certs',
-        'kubernetes-dashboard-csrf',
-      ]
-    verbs: ['get', 'update', 'delete']
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["kubernetes-dashboard-key-holder", "kubernetes-dashboard-certs", "kubernetes-dashboard-csrf"]
+    verbs: ["get", "update", "delete"]
     # Allow Dashboard to get and update 'kubernetes-dashboard-settings' config map.
-  - apiGroups: ['']
-    resources: ['configmaps']
-    resourceNames: ['kubernetes-dashboard-settings']
-    verbs: ['get', 'update']
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["kubernetes-dashboard-settings"]
+    verbs: ["get", "update"]
     # Allow Dashboard to get metrics.
-  - apiGroups: ['']
-    resources: ['services']
-    resourceNames: ['heapster', 'dashboard-metrics-scraper']
-    verbs: ['proxy']
-  - apiGroups: ['']
-    resources: ['services/proxy']
-    resourceNames:
-      [
-        'heapster',
-        'http:heapster:',
-        'https:heapster:',
-        'dashboard-metrics-scraper',
-        'http:dashboard-metrics-scraper',
-      ]
-    verbs: ['get']
+  - apiGroups: [""]
+    resources: ["services"]
+    resourceNames: ["heapster", "dashboard-metrics-scraper"]
+    verbs: ["proxy"]
+  - apiGroups: [""]
+    resources: ["services/proxy"]
+    resourceNames: ["heapster", "http:heapster:", "https:heapster:", "dashboard-metrics-scraper", "http:dashboard-metrics-scraper"]
+    verbs: ["get"]
 
 ---
+
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -134,11 +130,12 @@ metadata:
   name: kubernetes-dashboard
 rules:
   # Allow Metrics Scraper to get metrics from the Metrics server
-  - apiGroups: ['metrics.k8s.io']
-    resources: ['pods', 'nodes']
-    verbs: ['get', 'list', 'watch']
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list", "watch"]
 
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -156,6 +153,7 @@ subjects:
     namespace: kubernetes-dashboard
 
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -170,6 +168,7 @@ subjects:
     namespace: kubernetes-dashboard
 
 ---
+
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -190,7 +189,7 @@ spec:
     spec:
       containers:
         - name: kubernetes-dashboard
-          image: kubernetesui/dashboard:v2.0.0-rc2
+          image: kubernetesui/dashboard:v2.4.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8443
@@ -228,13 +227,14 @@ spec:
           emptyDir: {}
       serviceAccountName: kubernetes-dashboard
       nodeSelector:
-        'beta.kubernetes.io/os': linux
+        "kubernetes.io/os": linux
       # Comment the following tolerations if Dashboard must not be deployed on master
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
 
 ---
+
 kind: Service
 apiVersion: v1
 metadata:
@@ -250,6 +250,7 @@ spec:
     k8s-app: dashboard-metrics-scraper
 
 ---
+
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -267,12 +268,13 @@ spec:
     metadata:
       labels:
         k8s-app: dashboard-metrics-scraper
-      annotations:
-        seccomp.security.alpha.kubernetes.io/pod: 'runtime/default'
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: dashboard-metrics-scraper
-          image: kubernetesui/metrics-scraper:v1.0.2
+          image: kubernetesui/metrics-scraper:v1.0.7
           ports:
             - containerPort: 8000
               protocol: TCP
@@ -284,8 +286,8 @@ spec:
             initialDelaySeconds: 30
             timeoutSeconds: 30
           volumeMounts:
-            - mountPath: /tmp
-              name: tmp-volume
+          - mountPath: /tmp
+            name: tmp-volume
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -293,7 +295,7 @@ spec:
             runAsGroup: 2001
       serviceAccountName: kubernetes-dashboard
       nodeSelector:
-        'beta.kubernetes.io/os': linux
+        "kubernetes.io/os": linux
       # Comment the following tolerations if Dashboard must not be deployed on master
       tolerations:
         - key: node-role.kubernetes.io/master

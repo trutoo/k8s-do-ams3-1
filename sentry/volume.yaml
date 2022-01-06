@@ -1,0 +1,14 @@
+# Fetched from https://raw.githubusercontent.com/crazy-max/docker-matomo/3.13.1-RC6/examples/kubernetes/02-volume.yaml
+# Modified for tapps
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: sentry-data
+  namespace: sentry
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

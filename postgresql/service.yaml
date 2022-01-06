@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: external-postgresql
+spec:
+  type: ExternalName
+  externalName: postgresql-do-ams3-1-do-user-7026830-0.db.ondigitalocean.com
+  ports:
+    - port: 25060
+      targetPort: 25060
+      name: db

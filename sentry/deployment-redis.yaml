@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentry-redis
+  namespace: sentry
+  labels:
+    app: sentry-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentry-redis
+  template:
+    metadata:
+      labels:
+        app: sentry-redis
+    spec:
+      containers:
+        - name: sentry-redis
+          image: redis:5.0-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '50m'
+            requests:
+              memory: '128Mi'
+              cpu: '50m'
+          volumeMounts:
+            - name: sentry-redis-storage
+              mountPath: /data/redis
+      volumes:
+        - name: sentry-redis-storage
+          emptyDir: {}
