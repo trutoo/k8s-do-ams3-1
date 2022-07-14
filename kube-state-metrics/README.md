@@ -1,0 +1,1 @@
+Fetched from https://github.com/kubernetes/kube-state-metrics/tree/v2.5.0/examples/standard
