@@ -9,7 +9,7 @@ metadata:
     app: sentry-web
 spec:
   rules:
-    - host: analytics.tapps.io
+    - host: sentry.trutoo.io
       http:
         paths:
           - backend:
